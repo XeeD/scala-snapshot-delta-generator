@@ -1,10 +1,5 @@
 package xeed.snapshotdelta
 
-sealed trait Delta[T]
-final case class Identical[T](value: T) extends Delta[T]
-final case class Different[T](left: T, right: T, valueDelta: ValueDiff[T]) extends Delta[T]
-
-
 sealed trait ValueDiff[+T]
 final case class StringDiff(newValue: String) extends ValueDiff[String]
 final case class IntDiff(delta: Int) extends ValueDiff[Int]
@@ -51,22 +46,34 @@ object DeltaCalc {
 
 }
 
-object Diff {
-  def apply[T](left: T, right: T)(implicit deltaCalc: DeltaCalc[T]) =
-    if (left == right) Identical(left)
-    else Different(left, right, deltaCalc(left, right))
-}
-
 object Main extends App {
-  println(Diff("yo", "ho"))
-  println(Diff("yolo", "yolo"))
-  println(Diff(Set("foo", "bar"), Set("foo", "dummy")))
-  println(Diff(Map("foo" -> 42, "bar" -> 666, "baz" -> true), Map("baz" -> true, "foo" -> 18, "dummy" -> 88)))
+//  println(Delta("yo", "ho"))
+//  println(Delta("yolo", "yolo"))
+//  println(Delta(Set("foo", "bar"), Set("foo", "dummy")))
+//  println(Delta(Map("foo" -> 42, "bar" -> 666, "baz" -> true), Map("baz" -> true, "foo" -> 18, "dummy" -> 88)))
 
-  case class Event(id: Int, price: Double, name: String, tags: Set[String], metadata: Map[String, String])
+  case class GameScore(homeTeam: Int, awayTeam: Int)
+  case class Venue(name: String, location: String)
+  case class Event(
+    id: Int, price: Double, name: String, tags: Set[String], metadata: Map[String, String],
+//    gameScore: GameScore,
+//    venue: Venue
+  )
 
-  val old = Event(250, 5.5, "Ice Hockey Czech Republic", Set("ice hockey", "hockey championship"), Map("sbtechOldId" -> "123"))
-  val updated = Event(250, 2.2, "Ice Hockey Czech Republic vs Russia", Set("ice hockey", "hockey championship", "promoted"), Map("sbtechOldId" -> "123", "myPlay" -> "available"))
+  val oldScore = GameScore(1, 3)
+  val newScore = GameScore(4, 3)
 
-  println(SimpleDelta(old, updated))
+  val old = Event(
+    250, 5.5, "Ice Hockey Czech Republic", Set("ice hockey", "hockey championship"), Map("sbtechOldId" -> "123"),
+//    GameScore(1, 3),
+//    Venue("Sazka Arena", "Prague, CZ")
+  )
+  val updated = Event(
+    250, 2.2, "Ice Hockey Czech Republic vs Russia", Set("ice hockey", "hockey championship", "promoted"), Map("sbtechOldId" -> "123", "myPlay" -> "available"),
+//    GameScore(4, 3),
+//    Venue("Sazka Arena", "Prague, CZ")
+  )
+
+//  println(Delta(old, updated))
+  println(Delta(oldScore, newScore))
 }
