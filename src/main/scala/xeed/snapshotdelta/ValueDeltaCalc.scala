@@ -1,14 +1,14 @@
 package xeed.snapshotdelta
 
-sealed trait ValueDiff[+T]
-final case class StringDiff(newValue: String) extends ValueDiff[String]
-final case class IntDiff(delta: Int) extends ValueDiff[Int]
-final case class DoubleDiff(delta: Double) extends ValueDiff[Double]
-final case class SetValueDiff[E](added: Set[E], removed: Set[E]) extends ValueDiff[Set[E]]
-final case class MapValueDiff[K, V](added: Map[K, V], removed: Map[K, V], modified: Map[K, V]) extends ValueDiff[Map[K, V]]
+sealed trait ValueDiff
+final case class StringDiff(newValue: String) extends ValueDiff
+final case class IntDiff(delta: Int) extends ValueDiff
+final case class DoubleDiff(delta: Double) extends ValueDiff
+final case class SetValueDiff[E](added: Set[E], removed: Set[E]) extends ValueDiff
+final case class MapValueDiff[K, V](added: Map[K, V], removed: Map[K, V], modified: Map[K, V]) extends ValueDiff
 
 trait ValueDeltaCalc[T] {
-  def apply(left: T, right: T): ValueDiff[T]
+  def apply(left: T, right: T): ValueDiff
 }
 
 object ValueDeltaCalc {

@@ -31,6 +31,6 @@ object Main extends App {
 //    Venue("Sazka Arena", "Prague, CZ")
   )
 
-  println(Delta(old, updated).foldLeft(List[ValueDiff[Any]]())(deltaToMap))
-  println(Delta(oldScore, newScore).foldLeft(List[ValueDiff[Any]]())(deltaToMap))
+  println(Delta(old, updated).foldLeft(List[ValueDiff]())(deltaToMap))
+  println(Delta(oldScore, newScore).foldLeft(List[ValueDiff]())(deltaToMap))
 }
