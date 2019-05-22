@@ -22,12 +22,11 @@ object Delta {
     deltaCalc: ValueDeltaCalc[H],
     tailDelta: Delta[T]
   ): Delta[FieldType[K, H] :: T] =
-    createDelta[FieldType[K, H] :: T](
+    Delta.createDelta[FieldType[K, H] :: T](
       (left, right) =>
-        Map(witness.value.name -> deltaCalc(left.head, right.head))
+        Map(witness.value.name -> deltaCalc.calculate(left.head, right.head))
           ++ tailDelta.run(left.tail, right.tail)
     )
-
 
   implicit def genericDelta[A, R <: HList](
     implicit
