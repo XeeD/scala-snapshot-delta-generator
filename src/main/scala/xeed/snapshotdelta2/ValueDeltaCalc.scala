@@ -5,6 +5,7 @@ import shapeless.{ :+:, CNil, Coproduct, Generic, Inl, Inr, Lazy }
 sealed trait ValueDiff
 case object Identical extends ValueDiff
 case object DifferentTypes extends ValueDiff
+case class Replacement(newValue: Any) extends ValueDiff
 final case class NestedDiff(nested: Map[String, Any]) extends ValueDiff
 final case class StringDiff(newValue: String) extends ValueDiff
 final case class IntDiff(delta: Int) extends ValueDiff
@@ -26,16 +27,21 @@ object ValueDeltaCalc {
     override def run(left: CNil, right: CNil) = ???
   }
 
+  def findReplacement(cons: Coproduct): Replacement = cons match {
+    case Inl(h) => Replacement(h)
+    case Inr(t) => findReplacement(t)
+  }
+
   implicit def cconsDelta[H, T <: Coproduct](
     implicit
     headDelta: Lazy[Delta[H]],
-    tailDelta: ValueDeltaCalc[T]
+    tailDelta: ValueDeltaCalc[T],
   ): ValueDeltaCalc[H :+: T] = new ValueDeltaCalc[H :+: T] {
     override def apply(left: H :+: T, right: H :+: T) = {
       (left, right) match {
         case (Inl(hl), Inl(hr)) => NestedDiff(headDelta.value.run(hl, hr))
         case (Inr(tl), Inr(tr)) => tailDelta(tl, tr)
-        case _ => DifferentTypes
+        case _ => findReplacement(right)
       }
     }
   }
